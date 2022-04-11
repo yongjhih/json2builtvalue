@@ -2,13 +2,11 @@ import 'dart:convert';
 
 import 'package:built_collection/src/list.dart';
 import 'package:code_builder/code_builder.dart';
-import 'package:dart_style/dart_style.dart';
-import 'package:json2builtvalue/root.dart';
+import 'root.dart';
 import 'package:recase/recase.dart';
 import 'package:tuple/tuple.dart';
 
 class Parser {
-  final _dartfmt = new DartFormatter();
 
   String parse(String jsonString, String topLevelName) {
     var decode = json.decode(jsonString);
@@ -30,8 +28,6 @@ class Parser {
     });
 
 //    print('all: $allClasses');
-
-    String output = _generateStringClass(topLevel, topLevelName);
 
 //    allClasses.forEach((Tuple2<String, List<Subtype>> tuple){
 //      _generateStringClass(tuple.item2, tuple.item1 + 'Dto');
@@ -85,21 +81,20 @@ class Parser {
           ..name = '[updates(${_getPascalCaseClassName(name)}Builder b)]'))),)
           );
 
-    String classString = topLevelClass.accept(new DartEmitter()).toString();
+    String classString = topLevelClass.accept(DartEmitter()).toString();
 
     String header = """
-      library ${new ReCase(name).snakeCase};
-      import 'dart:convert';
-      
-      import 'package:built_collection/built_collection.dart';
-      import 'package:built_value/built_value.dart';
-      import 'package:built_value/serializer.dart';
-      
-      part '${new ReCase(name).snakeCase}.g.dart';
-    
-    """;
+library ${new ReCase(name).snakeCase};
+import 'dart:convert';
 
-    String output = _dartfmt.format(header + classString);
+import 'package:built_collection/built_collection.dart';
+import 'package:built_value/built_value.dart';
+import 'package:built_value/serializer.dart';
+
+part '${new ReCase(name).snakeCase}.g.dart';
+""";
+
+    String output = "$header\n$classString";
 
 //    print(output);
     return output;
@@ -120,7 +115,7 @@ class Parser {
     JsonType type = subtype.type;
     switch (type) {
       case JsonType.INT:
-        return new Reference('int');
+        return new Reference('int?');
       case JsonType.DOUBLE:
         return new Reference('double');
       case JsonType.BOOL:
