@@ -51,20 +51,21 @@ class Parser {
       ..methods = _buildMethods(topLevel)
       ..methods.add(Method((b) => b
         ..name = 'toJson'
-        ..returns = const Reference('String')
+        ..returns = const Reference('Map<String, dynamic>')
         ..body = Code(
-            'return json.encode(serializers.serializeWith(${_getPascalCaseClassName(
-                name)}.serializer, this));')))
+            'return serializers.serializeWith(${_getPascalCaseClassName(
+                name)}.serializer, this) as Map<String, dynamic>;')))
       ..methods.add(Method((b) => b
         ..name = 'fromJson'
         ..static = true
         ..requiredParameters.add(Parameter((b) => b
-          ..name = 'jsonString'
-          ..type = const Reference('String')))
+          ..name = 'jsonMap'
+          ..type = const Reference('Map<String, dynamic>')))
         ..returns = Reference(_getPascalCaseClassName(name))
         ..body = Code(
             'return serializers.deserializeWith(${_getPascalCaseClassName(
-                name)}.serializer, json.decode(jsonString));')))
+                name)}.serializer, jsonMap) as ${_getPascalCaseClassName(
+                name)};')))
       ..methods.add(Method((b) => b
         ..type = MethodType.getter
         ..name = 'serializer'
