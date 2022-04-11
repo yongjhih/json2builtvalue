@@ -14,7 +14,7 @@ class Root {
 class Subtype {
   final String name;
   final JsonType type;
-  final JsonType listType;
+  final JsonType? listType;
   final dynamic value;
 
   Subtype(this.name, this.type, this.value, {this.listType});
